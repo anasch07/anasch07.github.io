@@ -1,447 +1,587 @@
-
 <!doctype html>
 <html lang="en">
-<head><script>(function(){
-  function makeStore(){
-    var data = {};
-    var api = {
-      getItem: function(k){ return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null; },
-      setItem: function(k, v){ data[k] = String(v); },
-      removeItem: function(k){ delete data[k]; },
-      clear: function(){ data = {}; },
-      key: function(i){ return Object.keys(data)[i] || null; }
-    };
-    Object.defineProperty(api, 'length', { get: function(){ return Object.keys(data).length; } });
-    return api;
-  }
-  function tryShim(name){
-    var works = false;
-    try { works = !!window[name] && typeof window[name].getItem === 'function'; void window[name].length; }
-    catch (_) { works = false; }
-    if (works) return;
-    try { Object.defineProperty(window, name, { configurable: true, value: makeStore() }); }
-    catch (_) { try { window[name] = makeStore(); } catch (__) {} }
-  }
-  tryShim('localStorage');
-  tryShim('sessionStorage');
-})();</script>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Anas Chaibi — Software Engineer</title>
-<meta name="description" content="Anas Chaibi — Full-stack software engineer. Distributed systems, developer tools, LLM-powered features." />
-<style>
-  :root {
-    --bg:#fff; --surface:#fff; --fg:#000; --muted:#666; --faint:#a3a3a3; --border:#e5e5e5;
-    --topbar-bg: rgba(255,255,255,.85);
-    --hover: oklch(98% 0 0);
-    --sel-bg:#000; --sel-fg:#fff;
-    --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
-    --font-mono: ui-monospace, 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
-    --max:1120px; --gutter:32px;
-    color-scheme: light;
-  }
-  :root[data-theme="dark"] {
-    --bg:#0a0a0a; --surface:#0a0a0a; --fg:#fafafa; --muted:#9a9a9a; --faint:#555; --border:#1f1f1f;
-    --topbar-bg: rgba(10,10,10,.85);
-    --hover: oklch(18% 0 0);
-    --sel-bg:#fff; --sel-fg:#000;
-    color-scheme: dark;
-  }
-  *{box-sizing:border-box;}
-  html,body{background:var(--bg);color:var(--fg);}
-  body{margin:0;font-family:var(--font-sans);font-size:15px;line-height:1.55;letter-spacing:-0.005em;font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background-color .25s, color .25s;}
-  ::selection{background:var(--sel-bg);color:var(--sel-fg);}
-  a{color:inherit;text-decoration:none;}
-  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter);}
-  .topbar{position:sticky;top:0;z-index:10;background:var(--topbar-bg);backdrop-filter:saturate(160%) blur(10px);-webkit-backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--border);transition:background-color .25s, border-color .25s;}
-  .topbar-inner{display:flex;align-items:center;justify-content:space-between;height:56px;}
-  .brand-row{display:flex;align-items:center;gap:18px;}
-  .brand{font-weight:600;letter-spacing:-0.015em;font-size:14px;display:inline-flex;align-items:center;transition:opacity .15s;}
-  .brand:hover{opacity:.65;}
-  .brand .dot{display:inline-block;width:6px;height:6px;background:var(--fg);border-radius:50%;margin-right:10px;vertical-align:middle;transform:translateY(-1px);}
-  .brand-icons{display:inline-flex;align-items:center;gap:4px;padding-left:14px;border-left:1px solid var(--border);}
-  .brand-icons a{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);transition:color .15s;}
-  .brand-icons a:hover{color:var(--fg);}
-  .brand-icons svg{width:13px;height:13px;display:block;}
-  .nav{display:flex;gap:28px;font-size:13px;color:var(--muted);}
-  .nav a{transition:color .15s;} .nav a:hover{color:var(--fg);}
-  .nav .num{font-family:var(--font-mono);font-size:11px;color:var(--faint);margin-right:6px;}
-  .topbar-right{display:flex;align-items:center;gap:24px;}
-  .theme-toggle{appearance:none;background:none;border:1px solid var(--border);width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:border-color .15s,color .15s;}
-  .theme-toggle:hover{border-color:var(--fg);color:var(--fg);}
-  .theme-toggle svg{width:14px;height:14px;display:block;}
-  .theme-toggle .icon-sun{display:none;} .theme-toggle .icon-moon{display:block;}
-  :root[data-theme="dark"] .theme-toggle .icon-moon{display:none;}
-  :root[data-theme="dark"] .theme-toggle .icon-sun{display:block;}
-  section{padding:96px 0;border-bottom:1px solid var(--border);}
-  section:last-of-type{border-bottom:none;}
-  .eyebrow{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin:0 0 24px;display:flex;align-items:center;gap:12px;}
-  .eyebrow::before{content:"";display:inline-block;width:24px;height:1px;background:var(--fg);}
-  h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.025em;}
-  .intro{padding:120px 0 96px;position:relative;isolation:isolate;}
-  .intro::before{content:"";position:absolute;inset:0 calc(var(--gutter) * -1);z-index:-1;background-image:linear-gradient(to right,var(--border) 1px,transparent 1px),linear-gradient(to bottom,var(--border) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse 75% 65% at 30% 55%,#000 35%,transparent 85%);mask-image:radial-gradient(ellipse 75% 65% at 30% 55%,#000 35%,transparent 85%);opacity:.85;pointer-events:none;}
-  .intro-comment{font-family:var(--font-mono);font-size:12px;color:var(--muted);margin:0 0 24px;display:inline-flex;align-items:center;gap:6px;}
-  .intro-comment .slash{color:var(--faint);}
-  .intro h1{font-size:clamp(48px,7.2vw,96px);line-height:1.0;letter-spacing:-0.04em;font-weight:600;margin-bottom:28px;}
-  .intro h1 .name{display:inline;}
-  .intro h1 .caret{display:inline-block;width:4px;height:0.85em;background:var(--fg);margin-left:6px;vertical-align:-0.08em;animation:caret-blink 1.05s steps(2,end) infinite;}
-  @keyframes caret-blink{50%{opacity:0;}}
-  .intro h1 .role{display:block;color:var(--muted);font-weight:400;margin-top:8px;}
-  @media (prefers-reduced-motion: reduce){.intro h1 .caret{animation:none;}}
-  .intro-meta{display:flex;flex-wrap:wrap;gap:24px 40px;margin:36px 0 40px;font-size:13px;color:var(--muted);}
-  .intro-meta span strong{display:block;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--faint);font-weight:500;margin-bottom:4px;}
-  .intro p.bio{max-width:640px;font-size:18px;line-height:1.55;letter-spacing:-0.01em;color:var(--fg);}
-  .work-list{display:flex;flex-direction:column;}
-  .role{display:grid;grid-template-columns:120px 1fr;gap:48px;padding:32px 0;border-top:1px solid var(--border);}
-  .role:last-child{border-bottom:1px solid var(--border);}
-  .role-date{font-family:var(--font-mono);font-size:12px;color:var(--muted);padding-top:4px;line-height:1.5;}
-  .role h3{font-size:22px;letter-spacing:-0.02em;margin-bottom:4px;}
-  .role h3 .at{color:var(--muted);font-weight:400;}
-  .role h3 .at a{color:inherit;border-bottom:1px solid transparent;transition:border-color .15s,color .15s;}
-  .role h3 .at a:hover{color:var(--fg);border-bottom-color:var(--fg);}
-  .project .meta a{color:inherit;border-bottom:1px solid transparent;transition:border-color .15s,color .15s;}
-  .project .meta a:hover{color:var(--fg);border-bottom-color:currentColor;}
-  .cv-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:2px;transition:opacity .15s;}
-  .cv-link:hover{opacity:.55;}
-  .role-loc{font-size:13px;color:var(--muted);margin-bottom:16px;}
-  .role ul{margin:0 0 14px;padding:0;list-style:none;}
-  .role ul li{position:relative;padding-left:18px;margin-bottom:6px;color:var(--fg);line-height:1.55;}
-  .role ul li::before{content:"";position:absolute;left:0;top:11px;width:8px;height:1px;background:var(--fg);}
-  .role-skills{font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px;text-transform:lowercase;letter-spacing:0.01em;}
-  .projects{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);}
-  .project{padding:28px 36px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);transition:background .15s;}
-  .project:hover{background:var(--hover);}
-  .project .meta{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:14px;}
-  .project .meta .role{color:var(--faint);}
-  .project h3{font-size:20px;letter-spacing:-0.02em;margin-bottom:8px;}
-  .project h3 a{border-bottom:1px solid transparent;transition:border-color .15s;}
-  .project h3 a:hover{border-bottom-color:var(--fg);}
-  .project p{margin:0 0 16px;color:var(--muted);line-height:1.55;flex:1;}
-  .project .tags{font-family:var(--font-mono);font-size:11px;color:var(--muted);text-transform:lowercase;line-height:1.6;border-top:1px solid var(--border);padding-top:14px;}
-  .project .note{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--fg);margin-top:10px;display:flex;align-items:center;gap:8px;}
-  .project .note::before{content:"";width:6px;height:6px;background:var(--fg);border-radius:50%;display:inline-block;}
-  .project .foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:16px;}
-  .project .foot .note{margin-top:0;}
-  .project .more{appearance:none;background:none;border:none;padding:0 0 2px;cursor:pointer;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--fg);border-bottom:1px solid var(--fg);margin-left:auto;transition:opacity .15s;}
-  .project .more:hover{opacity:.55;}
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:100;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:64px 24px;}
-  .modal-overlay.open{display:flex;}
-  .modal{background:var(--bg);width:100%;max-width:760px;border:1px solid var(--border);padding:56px 64px 64px;position:relative;animation:modal-in .25s cubic-bezier(.2,.8,.2,1);}
-  @keyframes modal-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-  .modal-close{position:absolute;top:20px;right:20px;appearance:none;background:none;border:1px solid var(--border);width:32px;height:32px;cursor:pointer;font-family:var(--font-mono);font-size:13px;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s;}
-  .modal-close:hover{border-color:var(--fg);color:var(--fg);}
-  .modal-eyebrow{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin:0 0 16px;display:flex;gap:14px;flex-wrap:wrap;}
-  .modal-eyebrow .pipe{color:var(--faint);}
-  .modal h2{font-size:36px;letter-spacing:-0.025em;line-height:1.05;margin:0 0 12px;font-weight:600;}
-  .modal .deck{font-size:17px;line-height:1.55;color:var(--muted);margin:0 0 32px;max-width:560px;text-wrap:pretty;}
-  .modal h4{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:500;margin:28px 0 12px;padding-top:24px;border-top:1px solid var(--border);}
-  .modal h4:first-of-type{padding-top:0;border-top:none;margin-top:0;}
-  .modal p{margin:0 0 12px;line-height:1.6;color:var(--fg);}
-  .modal ul{margin:0;padding:0;list-style:none;}
-  .modal ul li{position:relative;padding-left:18px;padding-bottom:8px;line-height:1.55;color:var(--fg);}
-  .modal ul li::before{content:"";position:absolute;left:0;top:11px;width:8px;height:1px;background:var(--fg);}
-  .modal .stack{font-family:var(--font-mono);font-size:12px;line-height:1.7;color:var(--muted);text-transform:lowercase;}
-  .modal .links{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:4px;}
-  .modal .links a{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:2px;transition:opacity .15s;}
-  .modal .links a:hover{opacity:.55;}
-  body.modal-open{overflow:hidden;}
-  .toc{position:fixed;right:32px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px;z-index:8;padding:8px 0;}
-  .toc a{display:flex;align-items:center;gap:12px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);padding:6px 0;transition:color .2s;}
-  .toc a .rule{display:inline-block;width:16px;height:1px;background:currentColor;transition:width .25s,background .2s;}
-  .toc a .num{color:inherit;min-width:18px;}
-  .toc a .label{opacity:0;transform:translateX(-4px);transition:opacity .2s,transform .2s;}
-  .toc a:hover{color:var(--fg);} .toc a:hover .rule{width:24px;} .toc a:hover .label{opacity:1;transform:translateX(0);}
-  .toc a.active{color:var(--fg);} .toc a.active .rule{width:32px;background:var(--fg);} .toc a.active .label{opacity:1;transform:translateX(0);}
-  @media (max-width:1380px){.toc{display:none;}}
-  .words{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);}
-  .word{padding:36px 40px 32px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);}
-  .word .quote{font-size:16px;line-height:1.6;letter-spacing:-0.005em;color:var(--fg);margin:0 0 28px;flex:1;text-wrap:pretty;}
-  .word .quote::before{content:"“";display:inline-block;margin-right:4px;font-size:22px;line-height:0;vertical-align:-2px;color:var(--faint);}
-  .word .quote::after{content:"”";display:inline-block;margin-left:2px;font-size:22px;line-height:0;vertical-align:-2px;color:var(--faint);}
-  .word .by{border-top:1px solid var(--border);padding-top:16px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
-  .word .by .who{font-size:14px;font-weight:600;letter-spacing:-0.01em;color:var(--fg);}
-  .word .by .who span{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:2px;}
-  .word .by .at{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);text-align:right;white-space:nowrap;}
-  .skills-grid{display:grid;grid-template-columns:1fr 2fr;gap:24px 48px;}
-  .skills-grid .row{display:contents;}
-  .skills-grid .label{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);padding-top:4px;}
-  .skills-grid .vals{font-size:15px;line-height:1.65;color:var(--fg);border-bottom:1px solid var(--border);padding-bottom:20px;}
-  .skills-grid .row:last-child .vals{border-bottom:none;padding-bottom:0;}
-  .skills-grid .row:not(:first-child) .label{padding-top:24px;}
-  .skills-grid .row:not(:first-child) .vals{padding-top:24px;}
-  .split{display:grid;grid-template-columns:1fr 1fr;gap:80px;}
-  .split h3{font-size:18px;letter-spacing:-0.02em;margin-bottom:6px;}
-  .split p{margin:0 0 14px;color:var(--muted);}
-  .split ul{margin:0;padding:0;list-style:none;}
-  .split ul li{padding:10px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:16px;font-size:14px;}
-  .split ul li:last-child{border-bottom:1px solid var(--border);}
-  .split ul li .meta{font-family:var(--font-mono);font-size:11px;color:var(--muted);white-space:nowrap;}
-  .languages{display:flex;gap:28px;flex-wrap:wrap;margin-top:24px;}
-  .languages div strong{display:block;font-size:14px;margin-bottom:2px;}
-  .languages div span{font-family:var(--font-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
-  .contact h2{font-size:clamp(40px,5.5vw,72px);line-height:1.0;letter-spacing:-0.035em;margin-bottom:32px;}
-  .contact h2 a{border-bottom:2px solid var(--fg);padding-bottom:4px;}
-  .contact h2 a:hover{opacity:.55;}
-  .contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:56px;padding-top:24px;border-top:1px solid var(--border);}
-  .contact-grid a{display:block;padding:12px 0;}
-  .contact-grid a strong{display:block;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:6px;font-weight:500;}
-  .contact-grid a span{font-size:15px;color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;transition:opacity .15s;}
-  .contact-grid a:hover span{opacity:.55;}
-  footer{padding:32px 0 48px;font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;border-top:1px solid var(--border);}
-  @media (max-width:720px){
-    :root{--gutter:20px;}
-    section{padding:64px 0;}
-    .intro{padding:80px 0 64px;}
-    .nav{gap:16px;font-size:12px;} .nav .num{display:none;}
-    .brand-icons{display:none;}
-    .topbar-right{gap:14px;}
-    .role{grid-template-columns:1fr;gap:12px;} .role-date{padding-top:0;}
-    .projects{grid-template-columns:1fr;border-left:none;}
-    .project{padding:24px 0;border-right:none;}
-    .project .foot{flex-wrap:wrap;gap:12px;}
-    .modal{padding:40px 24px 48px;} .modal h2{font-size:28px;}
-    .words{grid-template-columns:1fr;border-left:none;}
-    .word{padding:28px 0;border-right:none;}
-    .skills-grid{grid-template-columns:1fr;gap:0;}
-    .skills-grid .label{padding-top:24px;padding-bottom:6px;}
-    .skills-grid .row:not(:first-child) .label{border-top:1px solid var(--border);}
-    .skills-grid .row:not(:first-child) .vals{padding-top:0;}
-    .split{grid-template-columns:1fr;gap:48px;}
-    .contact-grid{grid-template-columns:1fr 1fr;}
-  }
-</style>
-<script>
-  (function(){try{var s=localStorage.getItem('theme');if(s==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();
-</script>
-</head>
-<body>
-
-<header class="topbar">
-  <div class="wrap topbar-inner">
-    <div class="brand-row">
-      <a class="brand" href="#top" aria-label="Back to top"><span class="dot"></span>Anas Chaibi</a>
-      <div class="brand-icons" aria-label="Quick contact">
-        <a href="https://github.com/anasch07" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
-          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 .2A8 8 0 0 0 5.47 15.79c.4.07.55-.17.55-.38 0-.19-.01-.69-.01-1.36-2.23.49-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.06-.49.06-.49.81.06 1.23.83 1.23.83.71 1.22 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.65-.89-3.65-3.96 0-.87.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.52.56.83 1.28.83 2.15 0 3.08-1.87 3.76-3.66 3.95.29.25.54.74.54 1.49 0 1.08-.01 1.95-.01 2.21 0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg>
-        </a>
-        <a href="https://linkedin.com/in/anas-chaibi" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
-          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.432.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016c.005-.005.011-.012.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
-        </a>
-        <a href="mailto:anas.chaibi@insat.ucar.tn" aria-label="Email" title="Email">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3.5" width="12" height="9" rx="0.5"/><path d="m2.5 4.5 5.5 4 5.5-4"/></svg>
-        </a>
+   <head>
+      <script>(function(){
+         function makeStore(){
+           var data = {};
+           var api = {
+             getItem: function(k){ return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null; },
+             setItem: function(k, v){ data[k] = String(v); },
+             removeItem: function(k){ delete data[k]; },
+             clear: function(){ data = {}; },
+             key: function(i){ return Object.keys(data)[i] || null; }
+           };
+           Object.defineProperty(api, 'length', { get: function(){ return Object.keys(data).length; } });
+           return api;
+         }
+         function tryShim(name){
+           var works = false;
+           try { works = !!window[name] && typeof window[name].getItem === 'function'; void window[name].length; }
+           catch (_) { works = false; }
+           if (works) return;
+           try { Object.defineProperty(window, name, { configurable: true, value: makeStore() }); }
+           catch (_) { try { window[name] = makeStore(); } catch (__) {} }
+         }
+         tryShim('localStorage');
+         tryShim('sessionStorage');
+         })();
+      </script>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>Anas Chaibi — Software Engineer</title>
+      <meta name="description" content="Anas Chaibi — Full-stack software engineer. Distributed systems, developer tools, LLM-powered features." />
+      <style>
+         :root {
+         --bg:#fff; --surface:#fff; --fg:#000; --muted:#666; --faint:#a3a3a3; --border:#e5e5e5;
+         --topbar-bg: rgba(255,255,255,.85);
+         --hover: oklch(98% 0 0);
+         --sel-bg:#000; --sel-fg:#fff;
+         --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+         --font-mono: ui-monospace, 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+         --max:1120px; --gutter:32px;
+         color-scheme: light;
+         }
+         :root[data-theme="dark"] {
+         --bg:#0a0a0a; --surface:#0a0a0a; --fg:#fafafa; --muted:#9a9a9a; --faint:#555; --border:#1f1f1f;
+         --topbar-bg: rgba(10,10,10,.85);
+         --hover: oklch(18% 0 0);
+         --sel-bg:#fff; --sel-fg:#000;
+         color-scheme: dark;
+         }
+         *{box-sizing:border-box;}
+         html,body{background:var(--bg);color:var(--fg);}
+         body{margin:0;font-family:var(--font-sans);font-size:15px;line-height:1.55;letter-spacing:-0.005em;font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background-color .25s, color .25s;}
+         ::selection{background:var(--sel-bg);color:var(--sel-fg);}
+         a{color:inherit;text-decoration:none;}
+         .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter);}
+         .topbar{position:sticky;top:0;z-index:10;background:var(--topbar-bg);backdrop-filter:saturate(160%) blur(10px);-webkit-backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--border);transition:background-color .25s, border-color .25s;}
+         .topbar-inner{display:flex;align-items:center;justify-content:space-between;height:56px;}
+         .brand-row{display:flex;align-items:center;gap:18px;}
+         .brand{font-weight:600;letter-spacing:-0.015em;font-size:14px;display:inline-flex;align-items:center;transition:opacity .15s;}
+         .brand:hover{opacity:.65;}
+         .brand .dot{display:inline-block;width:6px;height:6px;background:var(--fg);border-radius:50%;margin-right:10px;vertical-align:middle;transform:translateY(-1px);}
+         .brand-icons{display:inline-flex;align-items:center;gap:4px;padding-left:14px;border-left:1px solid var(--border);}
+         .brand-icons a{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);transition:color .15s;}
+         .brand-icons a:hover{color:var(--fg);}
+         .brand-icons svg{width:13px;height:13px;display:block;}
+         .nav{display:flex;gap:28px;font-size:13px;color:var(--muted);}
+         .nav a{transition:color .15s;} .nav a:hover{color:var(--fg);}
+         .nav .num{font-family:var(--font-mono);font-size:11px;color:var(--faint);margin-right:6px;}
+         .topbar-right{display:flex;align-items:center;gap:24px;}
+         .theme-toggle{appearance:none;background:none;border:1px solid var(--border);width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:border-color .15s,color .15s;}
+         .theme-toggle:hover{border-color:var(--fg);color:var(--fg);}
+         .theme-toggle svg{width:14px;height:14px;display:block;}
+         .theme-toggle .icon-sun{display:none;} .theme-toggle .icon-moon{display:block;}
+         :root[data-theme="dark"] .theme-toggle .icon-moon{display:none;}
+         :root[data-theme="dark"] .theme-toggle .icon-sun{display:block;}
+         section{padding:96px 0;border-bottom:1px solid var(--border);}
+         section:last-of-type{border-bottom:none;}
+         .eyebrow{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin:0 0 24px;display:flex;align-items:center;gap:12px;}
+         .eyebrow::before{content:"";display:inline-block;width:24px;height:1px;background:var(--fg);}
+         h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.025em;}
+         .intro{padding:120px 0 96px;position:relative;isolation:isolate;}
+         .intro::before{content:"";position:absolute;inset:0 calc(var(--gutter) * -1);z-index:-1;background-image:linear-gradient(to right,var(--border) 1px,transparent 1px),linear-gradient(to bottom,var(--border) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse 75% 65% at 30% 55%,#000 35%,transparent 85%);mask-image:radial-gradient(ellipse 75% 65% at 30% 55%,#000 35%,transparent 85%);opacity:.85;pointer-events:none;}
+         .intro-comment{font-family:var(--font-mono);font-size:12px;color:var(--muted);margin:0 0 24px;display:inline-flex;align-items:center;gap:6px;}
+         .intro-comment .slash{color:var(--faint);}
+         .intro h1{font-size:clamp(48px,7.2vw,96px);line-height:1.0;letter-spacing:-0.04em;font-weight:600;margin-bottom:28px;}
+         .intro h1 .name{display:inline;}
+         .intro h1 .caret{display:inline-block;width:4px;height:0.85em;background:var(--fg);margin-left:6px;vertical-align:-0.08em;animation:caret-blink 1.05s steps(2,end) infinite;}
+         @keyframes caret-blink{50%{opacity:0;}}
+         .intro h1 .role{display:block;color:var(--muted);font-weight:400;margin-top:8px;}
+         @media (prefers-reduced-motion: reduce){.intro h1 .caret{animation:none;}}
+         .intro-meta{display:flex;flex-wrap:wrap;gap:24px 40px;margin:36px 0 40px;font-size:13px;color:var(--muted);}
+         .intro-meta span strong{display:block;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--faint);font-weight:500;margin-bottom:4px;}
+         .intro p.bio{max-width:640px;font-size:18px;line-height:1.55;letter-spacing:-0.01em;color:var(--fg);}
+         .work-list{display:flex;flex-direction:column;}
+         .role{display:grid;grid-template-columns:120px 1fr;gap:48px;padding:32px 0;border-top:1px solid var(--border);}
+         .role:last-child{border-bottom:1px solid var(--border);}
+         .role-date{font-family:var(--font-mono);font-size:12px;color:var(--muted);padding-top:4px;line-height:1.5;}
+         .role h3{font-size:22px;letter-spacing:-0.02em;margin-bottom:4px;}
+         .role h3 .at{color:var(--muted);font-weight:400;}
+         .role h3 .at a{color:inherit;border-bottom:1px solid transparent;transition:border-color .15s,color .15s;}
+         .role h3 .at a:hover{color:var(--fg);border-bottom-color:var(--fg);}
+         .project .meta a{color:inherit;border-bottom:1px solid transparent;transition:border-color .15s,color .15s;}
+         .project .meta a:hover{color:var(--fg);border-bottom-color:currentColor;}
+         .cv-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:2px;transition:opacity .15s;}
+         .cv-link:hover{opacity:.55;}
+         .role-loc{font-size:13px;color:var(--muted);margin-bottom:16px;}
+         .role ul{margin:0 0 14px;padding:0;list-style:none;}
+         .role ul li{position:relative;padding-left:18px;margin-bottom:6px;color:var(--fg);line-height:1.55;}
+         .role ul li::before{content:"";position:absolute;left:0;top:11px;width:8px;height:1px;background:var(--fg);}
+         .role-skills{font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px;text-transform:lowercase;letter-spacing:0.01em;}
+         .projects{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);}
+         .project{padding:28px 36px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);transition:background .15s;}
+         .project:hover{background:var(--hover);}
+         .project .meta{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:14px;}
+         .project .meta .role{color:var(--faint);}
+         .project h3{font-size:20px;letter-spacing:-0.02em;margin-bottom:8px;}
+         .project h3 a{border-bottom:1px solid transparent;transition:border-color .15s;}
+         .project h3 a:hover{border-bottom-color:var(--fg);}
+         .project p{margin:0 0 16px;color:var(--muted);line-height:1.55;flex:1;}
+         .project .tags{font-family:var(--font-mono);font-size:11px;color:var(--muted);text-transform:lowercase;line-height:1.6;border-top:1px solid var(--border);padding-top:14px;}
+         .project .note{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--fg);margin-top:10px;display:flex;align-items:center;gap:8px;}
+         .project .note::before{content:"";width:6px;height:6px;background:var(--fg);border-radius:50%;display:inline-block;}
+         .project .foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:16px;}
+         .project .foot .note{margin-top:0;}
+         .project .more{appearance:none;background:none;border:none;padding:0 0 2px;cursor:pointer;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--fg);border-bottom:1px solid var(--fg);margin-left:auto;transition:opacity .15s;}
+         .project .more:hover{opacity:.55;}
+         .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:100;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:64px 24px;}
+         .modal-overlay.open{display:flex;}
+         .modal{background:var(--bg);width:100%;max-width:760px;border:1px solid var(--border);padding:56px 64px 64px;position:relative;animation:modal-in .25s cubic-bezier(.2,.8,.2,1);}
+         @keyframes modal-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+         .modal-close{position:absolute;top:20px;right:20px;appearance:none;background:none;border:1px solid var(--border);width:32px;height:32px;cursor:pointer;font-family:var(--font-mono);font-size:13px;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s;}
+         .modal-close:hover{border-color:var(--fg);color:var(--fg);}
+         .modal-eyebrow{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin:0 0 16px;display:flex;gap:14px;flex-wrap:wrap;}
+         .modal-eyebrow .pipe{color:var(--faint);}
+         .modal h2{font-size:36px;letter-spacing:-0.025em;line-height:1.05;margin:0 0 12px;font-weight:600;}
+         .modal .deck{font-size:17px;line-height:1.55;color:var(--muted);margin:0 0 32px;max-width:560px;text-wrap:pretty;}
+         .modal h4{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:500;margin:28px 0 12px;padding-top:24px;border-top:1px solid var(--border);}
+         .modal h4:first-of-type{padding-top:0;border-top:none;margin-top:0;}
+         .modal p{margin:0 0 12px;line-height:1.6;color:var(--fg);}
+         .modal ul{margin:0;padding:0;list-style:none;}
+         .modal ul li{position:relative;padding-left:18px;padding-bottom:8px;line-height:1.55;color:var(--fg);}
+         .modal ul li::before{content:"";position:absolute;left:0;top:11px;width:8px;height:1px;background:var(--fg);}
+         .modal .stack{font-family:var(--font-mono);font-size:12px;line-height:1.7;color:var(--muted);text-transform:lowercase;}
+         .modal .links{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:4px;}
+         .modal .links a{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:2px;transition:opacity .15s;}
+         .modal .links a:hover{opacity:.55;}
+         body.modal-open{overflow:hidden;}
+         .toc{position:fixed;right:32px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px;z-index:8;padding:8px 0;}
+         .toc a{display:flex;align-items:center;gap:12px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);padding:6px 0;transition:color .2s;}
+         .toc a .rule{display:inline-block;width:16px;height:1px;background:currentColor;transition:width .25s,background .2s;}
+         .toc a .num{color:inherit;min-width:18px;}
+         .toc a .label{opacity:0;transform:translateX(-4px);transition:opacity .2s,transform .2s;}
+         .toc a:hover{color:var(--fg);} .toc a:hover .rule{width:24px;} .toc a:hover .label{opacity:1;transform:translateX(0);}
+         .toc a.active{color:var(--fg);} .toc a.active .rule{width:32px;background:var(--fg);} .toc a.active .label{opacity:1;transform:translateX(0);}
+         @media (max-width:1380px){.toc{display:none;}}
+         .words{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);}
+         .word{padding:36px 40px 32px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);}
+         .word .quote{font-size:16px;line-height:1.6;letter-spacing:-0.005em;color:var(--fg);margin:0 0 28px;flex:1;text-wrap:pretty;}
+         .word .quote::before{content:"“";display:inline-block;margin-right:4px;font-size:22px;line-height:0;vertical-align:-2px;color:var(--faint);}
+         .word .quote::after{content:"”";display:inline-block;margin-left:2px;font-size:22px;line-height:0;vertical-align:-2px;color:var(--faint);}
+         .word .by{border-top:1px solid var(--border);padding-top:16px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
+         .word .by .who{font-size:14px;font-weight:600;letter-spacing:-0.01em;color:var(--fg);}
+         .word .by .who span{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:2px;}
+         .word .by .at{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);text-align:right;white-space:nowrap;}
+         .skills-grid{display:grid;grid-template-columns:1fr 2fr;gap:24px 48px;}
+         .skills-grid .row{display:contents;}
+         .skills-grid .label{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);padding-top:4px;}
+         .skills-grid .vals{font-size:15px;line-height:1.65;color:var(--fg);border-bottom:1px solid var(--border);padding-bottom:20px;}
+         .skills-grid .row:last-child .vals{border-bottom:none;padding-bottom:0;}
+         .skills-grid .row:not(:first-child) .label{padding-top:24px;}
+         .skills-grid .row:not(:first-child) .vals{padding-top:24px;}
+         .split{display:grid;grid-template-columns:1fr 1fr;gap:80px;}
+         .split h3{font-size:18px;letter-spacing:-0.02em;margin-bottom:6px;}
+         .split p{margin:0 0 14px;color:var(--muted);}
+         .split ul{margin:0;padding:0;list-style:none;}
+         .split ul li{padding:10px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:16px;font-size:14px;}
+         .split ul li:last-child{border-bottom:1px solid var(--border);}
+         .split ul li .meta{font-family:var(--font-mono);font-size:11px;color:var(--muted);white-space:nowrap;}
+         .languages{display:flex;gap:28px;flex-wrap:wrap;margin-top:24px;}
+         .languages div strong{display:block;font-size:14px;margin-bottom:2px;}
+         .languages div span{font-family:var(--font-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+         .contact h2{font-size:clamp(40px,5.5vw,72px);line-height:1.0;letter-spacing:-0.035em;margin-bottom:32px;}
+         .contact h2 a{border-bottom:2px solid var(--fg);padding-bottom:4px;}
+         .contact h2 a:hover{opacity:.55;}
+         .contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:56px;padding-top:24px;border-top:1px solid var(--border);}
+         .contact-grid a{display:block;padding:12px 0;}
+         .contact-grid a strong{display:block;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:6px;font-weight:500;}
+         .contact-grid a span{font-size:15px;color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;transition:opacity .15s;}
+         .contact-grid a:hover span{opacity:.55;}
+         footer{padding:32px 0 48px;font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;border-top:1px solid var(--border);}
+         @media (max-width:720px){
+         :root{--gutter:20px;}
+         section{padding:64px 0;}
+         .intro{padding:80px 0 64px;}
+         .nav{gap:16px;font-size:12px;} .nav .num{display:none;}
+         .brand-icons{display:none;}
+         .topbar-right{gap:14px;}
+         .role{grid-template-columns:1fr;gap:12px;} .role-date{padding-top:0;}
+         .projects{grid-template-columns:1fr;border-left:none;}
+         .project{padding:24px 0;border-right:none;}
+         .project .foot{flex-wrap:wrap;gap:12px;}
+         .modal{padding:40px 24px 48px;} .modal h2{font-size:28px;}
+         .words{grid-template-columns:1fr;border-left:none;}
+         .word{padding:28px 0;border-right:none;}
+         .skills-grid{grid-template-columns:1fr;gap:0;}
+         .skills-grid .label{padding-top:24px;padding-bottom:6px;}
+         .skills-grid .row:not(:first-child) .label{border-top:1px solid var(--border);}
+         .skills-grid .row:not(:first-child) .vals{padding-top:0;}
+         .split{grid-template-columns:1fr;gap:48px;}
+         .contact-grid{grid-template-columns:1fr 1fr;}
+         }
+      </style>
+      <script>
+         (function(){try{var s=localStorage.getItem('theme');if(s==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();
+      </script>
+   </head>
+   <body>
+      <header class="topbar">
+         <div class="wrap topbar-inner">
+            <div class="brand-row">
+               <a class="brand" href="#top" aria-label="Back to top"><span class="dot"></span>Anas Chaibi</a>
+               <div class="brand-icons" aria-label="Quick contact">
+                  <a href="https://github.com/anasch07" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
+                     <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M8 .2A8 8 0 0 0 5.47 15.79c.4.07.55-.17.55-.38 0-.19-.01-.69-.01-1.36-2.23.49-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.06-.49.06-.49.81.06 1.23.83 1.23.83.71 1.22 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.65-.89-3.65-3.96 0-.87.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.52.56.83 1.28.83 2.15 0 3.08-1.87 3.76-3.66 3.95.29.25.54.74.54 1.49 0 1.08-.01 1.95-.01 2.21 0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/>
+                     </svg>
+                  </a>
+                  <a href="https://linkedin.com/in/anas-chaibi" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+                     <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.432.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016c.005-.005.011-.012.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                     </svg>
+                  </a>
+                  <a href="mailto:anas.chaibi@insat.ucar.tn" aria-label="Email" title="Email">
+                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="2" y="3.5" width="12" height="9" rx="0.5"/>
+                        <path d="m2.5 4.5 5.5 4 5.5-4"/>
+                     </svg>
+                  </a>
+               </div>
+            </div>
+            <div class="topbar-right">
+               <nav class="nav">
+                  <a href="#work"><span class="num">01</span>Work</a>
+                  <a href="#projects"><span class="num">02</span>Projects</a>
+                  <a href="#words"><span class="num">03</span>Words</a>
+                  <a href="#skills"><span class="num">04</span>Skills</a>
+                  <a href="#contact"><span class="num">05</span>Contact</a>
+               </nav>
+               <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle theme">
+                  <svg class="icon-moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                     <path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z"/>
+                  </svg>
+                  <svg class="icon-sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                     <circle cx="8" cy="8" r="3"/>
+                     <path d="M8 1.5v1.5M8 13v1.5M1.5 8h1.5M13 8h1.5M3.4 3.4l1.05 1.05M11.55 11.55l1.05 1.05M3.4 12.6l1.05-1.05M11.55 4.45l1.05-1.05"/>
+                  </svg>
+               </button>
+            </div>
+         </div>
+      </header>
+      <main class="wrap">
+         <section class="intro" id="top">
+            <p class="intro-comment"><span class="slash">/*</span> Software engineer <span class="slash">*/</span></p>
+            <h1>
+               <span class="name">Anas Chaibi.</span><span class="caret" aria-hidden="true"></span>
+               <span class="role">Building reliable systems &amp; thoughtful interfaces.</span>
+            </h1>
+            <div class="intro-meta">
+               <span><strong>Based in</strong>Paris, France</span>
+               <span><strong>Focus</strong>Full-stack &middot; distributed systems &middot; LLMs</span>
+            </div>
+            <p class="bio">Full-stack software engineer with 3+ years across startups and international teams. I&rsquo;ve shipped scalable products, optimized distributed systems, and built LLM-powered features that solve real user problems. I&rsquo;m drawn to engineering work that turns business problems into solid technical solutions.</p>
+         </section>
+         <section id="work">
+            <p class="eyebrow">01 &nbsp; Where I&rsquo;ve worked</p>
+            <div class="work-list">
+               <article class="role">
+                  <div class="role-date">Aug 2025<br>Present</div>
+                  <div>
+                     <h3>Software Engineer <span class="at">at <a href="https://front.com/" target="_blank" rel="noopener">Front</a> &middot; Analytics</span></h3>
+                     <div class="role-loc">Paris, France</div>
+                     <ul>
+                        <li>Shipping analytics AI-powered features used by 9,000+ companies and 150k+ users.</li>
+                        <li>Contributing to Front&rsquo;s Elasticsearch &rarr; ClickHouse migration &mdash; schema design, metrics migration, rollout tooling, and benchmarking.</li>
+                     </ul>
+                     <div class="role-skills">typescript &middot; clickhouse &middot; elasticsearch &middot; react &middot; system design &middot; benchmarking</div>
+                  </div>
+               </article>
+               <article class="role">
+                  <div class="role-date">Feb 2025<br>Jul 2025</div>
+                  <div>
+                     <h3>Software Engineer Intern <span class="at">at <a href="https://front.com/" target="_blank" rel="noopener">Front</a></span></h3>
+                     <div class="role-loc">Paris, France</div>
+                     <ul>
+                        <li>Designed and benchmarked a ClickHouse migration achieving 93% less storage and 4.9&times; faster ingestion.</li>
+                        <li>Built and improved analytics features with the analytics team.</li>
+                        <li>Contributed to full-stack AI features &mdash; backend LLM services and frontend interfaces.</li>
+                     </ul>
+                     <div class="role-skills">typescript &middot; clickhouse &middot; elasticsearch &middot; react &middot; system design &middot; llms</div>
+                  </div>
+               </article>
+               <article class="role">
+                  <div class="role-date">Jul 2024<br>Sep 2024</div>
+                  <div>
+                     <h3>Quality Assurance Engineer Intern <span class="at">at <a href="https://www.lighton.ai/" target="_blank" rel="noopener">LightOn</a></span></h3>
+                     <div class="role-loc">Paris, France</div>
+                     <ul>
+                        <li>Doubled unit-test coverage with a security focus, reducing vulnerabilities.</li>
+                        <li>Built Playwright end-to-end tests, cutting testing cycles by 3&times; and accelerating releases.</li>
+                        <li>Introduced SecurityMixins and APIError patterns; authored internal developer documentation.</li>
+                     </ul>
+                     <div class="role-skills">python &middot; django &middot; gitlab ci &middot; sonarqube &middot; playwright &middot; docker &middot; gcp &middot; mkdocs</div>
+                  </div>
+               </article>
+               <article class="role">
+                  <div class="role-date">Feb 2024<br>Jun 2024</div>
+                  <div>
+                     <h3>DevOps Engineer <span class="at">at <a href="https://www.silverbrain.ai/" target="_blank" rel="noopener">Silver Brain AI AG</a> &middot; part-time</span></h3>
+                     <div class="role-loc">Geneva, Switzerland</div>
+                     <ul>
+                        <li>Migrated a monolith to distributed microservices, lifting performance by 40%.</li>
+                        <li>Used Docker, Azure Container Apps, and Celery to run multiple LLM pipelines reliably.</li>
+                        <li>Built secure CI/CD with GitHub Actions and Azure Key Vault, reducing incidents in regulated environments.</li>
+                     </ul>
+                     <div class="role-skills">python &middot; fastapi &middot; azure &middot; github actions &middot; docker &middot; ansible &middot; terraform &middot; celery &middot; llms</div>
+                  </div>
+               </article>
+               <article class="role">
+                  <div class="role-date">Mar 2023<br>Apr 2024</div>
+                  <div>
+                     <h3>Full-stack Web Developer <span class="at">at <a href="https://nexaminds.net/" target="_blank" rel="noopener">Nexaminds</a> &middot; part-time</span></h3>
+                     <div class="role-loc">Tunisia</div>
+                     <ul>
+                        <li>Co-designed and shipped the Nexaminds MVP across seven microservices with high availability and scale.</li>
+                     </ul>
+                     <div class="role-skills">nestjs &middot; next.js &middot; github actions &middot; docker &middot; aws &middot; datadog &middot; jest &middot; locust &middot; kubernetes &middot; mongodb</div>
+                  </div>
+               </article>
+               <article class="role">
+                  <div class="role-date">Jul 2022<br>Oct 2022</div>
+                  <div>
+                     <h3>Full-stack Web Developer Intern <span class="at">at <a href="https://www.orange.com/" target="_blank" rel="noopener">Orange</a></span></h3>
+                     <div class="role-loc">Tunisia</div>
+                     <ul>
+                        <li>Led development of &ldquo;FireFlow&rdquo;, a firefighter-dispatch solution &mdash; saving an estimated $15,000 per hectare preserved.</li>
+                     </ul>
+                     <div class="role-skills">mongodb &middot; express.js &middot; node.js &middot; firebase &middot; gcp &middot; react &middot; leaflet</div>
+                  </div>
+               </article>
+            </div>
+         </section>
+         <section id="projects">
+            <p class="eyebrow">02 &nbsp; Things I&rsquo;ve built</p>
+            <div class="projects">
+               <article class="project">
+                  <div class="meta"><span>2024</span><span class="role">Big data &middot; ETL</span></div>
+                  <h3><a href="https://github.com/anasch07/BigData-JobScrapper-Pipeline-Hadoop-Kafka-Spark" target="_blank" rel="noopener">Automated Job Data Scraper &rarr;</a></h3>
+                  <p>End-to-end big-data ETL pipeline for real-time job-listing scraping, enrichment, and ranking with AI/LLM steps inline &mdash; cutting application time by ~40%.</p>
+                  <div class="tags">puppeteer &middot; kafka &middot; spark &middot; hadoop &middot; hdfs &middot; celery &middot; next.js &middot; docker &middot; llms</div>
+                  <div class="foot"><span class="note">github.com/anasch07</span><button class="more" data-project="jobscraper" type="button">Read more &rarr;</button></div>
+               </article>
+               <article class="project">
+                  <div class="meta"><span>2023&mdash;Present</span><span class="role">Founding engineer</span></div>
+                  <h3><a href="https://nexaminds.net" target="_blank" rel="noopener">Nexaminds &rarr;</a></h3>
+                  <p>Recruitment platform connecting businesses with talent. Built the MVP from scratch &mdash; UML, monorepo, microservices, observability, load testing.</p>
+                  <div class="tags">nestjs &middot; next.js &middot; tailwind &middot; mongodb &middot; graphql &middot; aws &middot; gitlab ci &middot; datadog &middot; locust</div>
+                  <div class="foot"><span class="note">Live &middot; nexaminds.net</span><button class="more" data-project="nexaminds" type="button">Read more &rarr;</button></div>
+               </article>
+               <article class="project">
+                  <div class="meta"><span>2023</span><span class="role">Team &middot; 3 people</span></div>
+                  <h3>Quizini</h3>
+                  <p>Graph-based quiz platform for educators. Professors compose interactive quizzes as graphs; students get a clean play surface and per-room performance analytics.</p>
+                  <div class="tags">nestjs &middot; next.js &middot; tailwind &middot; mongodb &middot; azure &middot; github actions &middot; swagger</div>
+                  <div class="foot"><button class="more" data-project="quizini" type="button">Read more &rarr;</button></div>
+               </article>
+               <article class="project">
+                  <div class="meta"><span>2022&mdash;2023</span><span class="role">Team &middot; 3 people</span></div>
+                  <h3>Professional Network</h3>
+                  <p>LinkedIn-style social network with real-time messaging, group spaces, events, and WebRTC audio/video calls between members.</p>
+                  <div class="tags">react &middot; node &middot; express &middot; mongodb &middot; redux &middot; socket.io &middot; webrtc &middot; jwt</div>
+                  <div class="foot"><button class="more" data-project="prosocial" type="button">Read more &rarr;</button></div>
+               </article>
+               <article class="project">
+                  <div class="meta"><span>2022</span><span class="role">Team &middot; <a href="https://www.orange.com/" target="_blank" rel="noopener">Orange</a></span></div>
+                  <h3>FireFlow</h3>
+                  <p>IoT mesh of ESP32 nodes for real-time forest-fire detection, with an AI fire-spread model and a live thermal map for firefighter dispatch.</p>
+                  <div class="tags">react &middot; node &middot; mongodb &middot; mqtt &middot; esp32 &middot; tensorflow &middot; vertex ai &middot; leaflet</div>
+                  <div class="foot"><span class="note">Won Orange Summer Challenge 2022</span><button class="more" data-project="fireflow" type="button">Read more &rarr;</button></div>
+               </article>
+               <article class="project">
+                  <div class="meta"><span>2023</span><span class="role">Distributed systems</span></div>
+                  <h3><a href="https://github.com/anasch07/DB-Synchronization-with-RabbitMQ" target="_blank" rel="noopener">Distributed Database Synchronizer &rarr;</a></h3>
+                  <p>End-to-end database synchronization across heterogeneous systems using RabbitMQ as the spine &mdash; streamlining cross-system data consistency under failure.</p>
+                  <div class="tags">rabbitmq &middot; distributed systems &middot; python</div>
+                  <div class="foot"><span class="note">github.com/anasch07</span><button class="more" data-project="dbsync" type="button">Read more &rarr;</button></div>
+               </article>
+            </div>
+         </section>
+         <section id="words">
+            <p class="eyebrow">03 &nbsp; Kind words</p>
+            <div class="words">
+               <article class="word">
+                  <p class="quote">Anas made substantial improvements in our automated testing and streamlined our test setup &mdash; refactoring for readability, hardening security, and identifying vulnerabilities. Proactive, collaborative, an excellent asset to any organization.</p>
+                  <div class="by">
+                     <div class="who">Iacopo Poli<span>Chief Product Officer</span></div>
+                     <div class="at">LightOn</div>
+                  </div>
+               </article>
+               <article class="word">
+                  <p class="quote">A very hard worker who consistently went above and beyond. Anas became proficient across our microservice architectures and frontend integrations &mdash; an excellent team player who communicates effectively and consistently delivers high-quality work.</p>
+                  <div class="by">
+                     <div class="who">Aziz Fekih<span>Chief Product Officer</span></div>
+                     <div class="at">Nexaminds</div>
+                  </div>
+               </article>
+               <article class="word">
+                  <p class="quote">One of INSAT&rsquo;s brightest students. Both technically and socially, Anas stood out and took on more and more responsibility. He&rsquo;s one of those people who really put their minds to something and eventually make it happen.</p>
+                  <div class="by">
+                     <div class="who">Mohamed Ben Attia<span>Ex-President of the association</span></div>
+                     <div class="at">Junior Entreprise INSAT</div>
+                  </div>
+               </article>
+               <article class="word">
+                  <p class="quote">I worked with Anas during the Forum INSAT Entreprise hackathon, where he led the project. He demonstrated strong communication skills and a solid attitude toward challenging situations.</p>
+                  <div class="by">
+                     <div class="who">Bacem Mejdoub<span>Consultant</span></div>
+                     <div class="at">EY</div>
+                  </div>
+               </article>
+            </div>
+         </section>
+         <section id="skills">
+            <p class="eyebrow">04 &nbsp; Stack</p>
+            <div class="skills-grid">
+               <div class="row">
+                  <div class="label">Programming languages</div>
+                  <div class="vals">TypeScript &middot; JavaScript &middot; Python &middot; C / C++ &middot; SQL / PL-SQL</div>
+               </div>
+               <div class="row">
+                  <div class="label">Backend</div>
+                  <div class="vals">NestJS &middot; Express.js &middot; GraphQL &middot; FastAPI &middot; Django &middot; Celery &middot; Locust &middot; Swagger &middot; MkDocs</div>
+               </div>
+               <div class="row">
+                  <div class="label">Frontend</div>
+                  <div class="vals">React &middot; Next.js &middot; Angular &middot; Redux &middot; Tailwind &middot; CSS / SCSS &middot; shadcn/ui</div>
+               </div>
+               <div class="row">
+                  <div class="label">Cloud &amp; DevOps</div>
+                  <div class="vals">Docker &middot; AWS &middot; Azure &middot; Kubernetes &middot; CI/CD &middot; Ansible &middot; SonarQube &middot; Git &middot; RabbitMQ</div>
+               </div>
+               <div class="row">
+                  <div class="label">Interests</div>
+                  <div class="vals">System design &middot; distributed systems &middot; problem solving &middot; DevSecOps &middot; LLMs &middot; automation</div>
+               </div>
+            </div>
+         </section>
+         <section id="education">
+            <div class="split">
+               <div>
+                  <p class="eyebrow">05 &nbsp; Education</p>
+                  <h3>M.Sc. Software Engineering</h3>
+                  <p>INSAT &middot; Tunis &middot; 2020 &mdash; 2025</p>
+                  <ul>
+                     <li>Distributed systems<span class="meta">core</span></li>
+                     <li>Software testing &amp; DevOps<span class="meta">core</span></li>
+                     <li>Big data &amp; databases<span class="meta">core</span></li>
+                     <li>Algorithms &amp; data structures<span class="meta">core</span></li>
+                     <li>Cyber security &amp; optimization<span class="meta">elective</span></li>
+                  </ul>
+                  <a class="cv-link" href="https://drive.google.com/file/d/19IzHyXTGBQ048u107moj3dcc1J1YmOWF/view" target="_blank" rel="noopener">Study plan &mdash; r&eacute;sum&eacute; &rarr;</a>
+                  <div class="languages">
+                     <div><strong>English</strong><span>Fluent</span></div>
+                     <div><strong>French</strong><span>Professional</span></div>
+                     <div><strong>German</strong><span>Basic</span></div>
+                  </div>
+               </div>
+               <div>
+                  <p class="eyebrow">06 &nbsp; Awards</p>
+                  <ul>
+                     <li>IEEE Extreme 16.0 &mdash; Top 10<span class="meta">2022</span></li>
+                     <li>Orange Summer Challenge &mdash; 2nd prize<span class="meta">2022</span></li>
+                     <li>Open Startup Tunisia &mdash; First-cohort winner<span class="meta">2021</span></li>
+                  </ul>
+               </div>
+            </div>
+         </section>
+         <section class="contact" id="contact">
+            <p class="eyebrow">07 &nbsp; Contact</p>
+            <h2>Let&rsquo;s build something<br><a href="mailto:anas.chaibi@insat.ucar.tn">worth shipping &rarr;</a></h2>
+            <div class="contact-grid">
+               <a href="mailto:anas.chaibi@insat.ucar.tn"><strong>Email</strong><span>anas.chaibi@insat.ucar.tn</span></a>
+               <a href="https://github.com/anasch07" target="_blank" rel="noopener"><strong>GitHub</strong><span>github.com/anasch07</span></a>
+               <a href="https://linkedin.com/in/anas-chaibi" target="_blank" rel="noopener"><strong>LinkedIn</strong><span>linkedin.com/in/anas-chaibi</span></a>
+               <a href="https://anas-chaibi.me" target="_blank" rel="noopener"><strong>Web</strong><span>anas-chaibi.me</span></a>
+            </div>
+         </section>
+      </main>
+      <footer class="wrap">
+         <span>&copy; Anas Chaibi &middot; 2026</span>
+         <span>Set in system sans &middot; built with care</span>
+      </footer>
+      <aside class="toc" aria-label="Sections">
+         <a href="#top" data-id="top"><span class="rule"></span><span class="num">00</span><span class="label">Intro</span></a>
+         <a href="#work" data-id="work"><span class="rule"></span><span class="num">01</span><span class="label">Work</span></a>
+         <a href="#projects" data-id="projects"><span class="rule"></span><span class="num">02</span><span class="label">Projects</span></a>
+         <a href="#words" data-id="words"><span class="rule"></span><span class="num">03</span><span class="label">Words</span></a>
+         <a href="#skills" data-id="skills"><span class="rule"></span><span class="num">04</span><span class="label">Stack</span></a>
+         <a href="#education" data-id="education"><span class="rule"></span><span class="num">05</span><span class="label">Education</span></a>
+         <a href="#contact" data-id="contact"><span class="rule"></span><span class="num">06</span><span class="label">Contact</span></a>
+      </aside>
+      <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+         <div class="modal" role="document">
+            <button class="modal-close" type="button" aria-label="Close">&times;</button>
+            <p class="modal-eyebrow" id="modal-eyebrow"></p>
+            <h2 id="modal-title"></h2>
+            <p class="deck" id="modal-deck"></p>
+            <div id="modal-body"></div>
+         </div>
       </div>
-    </div>
-    <div class="topbar-right">
-      <nav class="nav">
-        <a href="#work"><span class="num">01</span>Work</a>
-        <a href="#projects"><span class="num">02</span>Projects</a>
-        <a href="#words"><span class="num">03</span>Words</a>
-        <a href="#skills"><span class="num">04</span>Skills</a>
-        <a href="#contact"><span class="num">05</span>Contact</a>
-      </nav>
-      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle theme">
-        <svg class="icon-moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8h1.5M13 8h1.5M3.4 3.4l1.05 1.05M11.55 11.55l1.05 1.05M3.4 12.6l1.05-1.05M11.55 4.45l1.05-1.05"/></svg>
-      </button>
-    </div>
-  </div>
-</header>
-
-<main class="wrap">
-
-  <section class="intro" id="top">
-    <p class="intro-comment"><span class="slash">/*</span> Software engineer <span class="slash">*/</span></p>
-    <h1>
-      <span class="name">Anas Chaibi.</span><span class="caret" aria-hidden="true"></span>
-      <span class="role">Building reliable systems &amp; thoughtful interfaces.</span>
-    </h1>
-    <div class="intro-meta">
-      <span><strong>Based in</strong>Paris, France</span>
-      <span><strong>Focus</strong>Full-stack &middot; distributed systems &middot; LLMs</span>
-    </div>
-    <p class="bio">Full-stack software engineer with 3+ years across startups and international teams. I&rsquo;ve shipped scalable products, optimized distributed systems, and built LLM-powered features that solve real user problems. I&rsquo;m drawn to engineering work that turns business problems into solid technical solutions.</p>
-  </section>
-
-  <section id="work">
-    <p class="eyebrow">01 &nbsp; Where I&rsquo;ve worked</p>
-    <div class="work-list">
-      <article class="role"><div class="role-date">Aug 2025<br>Present</div><div><h3>Software Engineer <span class="at">at <a href="https://front.com/" target="_blank" rel="noopener">Front</a> &middot; Analytics</span></h3><div class="role-loc">Paris, France</div><ul><li>Contributing to Front&rsquo;s Elasticsearch &rarr; ClickHouse migration &mdash; schema design, query rewrites, rollout tooling, and benchmarking.</li><li>Shipping analytics AI-powered features used by 9,000+ companies and 150k+ users.</li></ul><div class="role-skills">typescript &middot; clickhouse &middot; elasticsearch &middot; react &middot; system design &middot; benchmarking</div></div></article>
-      <article class="role"><div class="role-date">Feb 2025<br>Jul 2025</div><div><h3>Software Engineer Intern <span class="at">at <a href="https://front.com/" target="_blank" rel="noopener">Front</a></span></h3><div class="role-loc">Paris, France</div><ul><li>Designed and benchmarked a ClickHouse migration achieving 93% less storage and 4.9&times; faster ingestion.</li><li>Built and improved analytics features with the analytics team.</li><li>Contributed to full-stack AI features &mdash; backend LLM services and frontend interfaces.</li></ul><div class="role-skills">typescript &middot; clickhouse &middot; elasticsearch &middot; react &middot; system design &middot; llms</div></div></article>
-      <article class="role"><div class="role-date">Jul 2024<br>Sep 2024</div><div><h3>Quality Assurance Engineer Intern <span class="at">at <a href="https://www.lighton.ai/" target="_blank" rel="noopener">LightOn</a></span></h3><div class="role-loc">Paris, France</div><ul><li>Doubled unit-test coverage with a security focus, reducing vulnerabilities.</li><li>Built Playwright end-to-end tests, cutting testing cycles by 3&times; and accelerating releases.</li><li>Introduced SecurityMixins and APIError patterns; authored internal developer documentation.</li></ul><div class="role-skills">python &middot; django &middot; gitlab ci &middot; sonarqube &middot; playwright &middot; docker &middot; gcp &middot; mkdocs</div></div></article>
-      <article class="role"><div class="role-date">Feb 2024<br>Jun 2024</div><div><h3>DevOps Engineer <span class="at">at <a href="https://www.silverbrain.ai/" target="_blank" rel="noopener">Silver Brain AI AG</a> &middot; part-time</span></h3><div class="role-loc">Geneva, Switzerland</div><ul><li>Migrated a monolith to distributed microservices, lifting performance by 40%.</li><li>Used Docker, Azure Container Apps, and Celery to run multiple LLM pipelines reliably.</li><li>Built secure CI/CD with GitHub Actions and Azure Key Vault, reducing incidents in regulated environments.</li></ul><div class="role-skills">python &middot; fastapi &middot; azure &middot; github actions &middot; docker &middot; ansible &middot; terraform &middot; celery &middot; llms</div></div></article>
-      <article class="role"><div class="role-date">Mar 2023<br>Apr 2024</div><div><h3>Full-stack Web Developer <span class="at">at <a href="https://nexaminds.net/" target="_blank" rel="noopener">Nexaminds</a> &middot; part-time</span></h3><div class="role-loc">Tunisia</div><ul><li>Co-designed and shipped the Nexaminds MVP across seven microservices with high availability and scale.</li></ul><div class="role-skills">nestjs &middot; next.js &middot; github actions &middot; docker &middot; aws &middot; datadog &middot; jest &middot; locust &middot; kubernetes &middot; mongodb</div></div></article>
-      <article class="role"><div class="role-date">Jul 2022<br>Oct 2022</div><div><h3>Full-stack Web Developer Intern <span class="at">at <a href="https://www.orange.com/" target="_blank" rel="noopener">Orange</a></span></h3><div class="role-loc">Tunisia</div><ul><li>Led development of &ldquo;FireFlow&rdquo;, a firefighter-dispatch solution &mdash; saving an estimated $15,000 per hectare preserved.</li></ul><div class="role-skills">mongodb &middot; express.js &middot; node.js &middot; firebase &middot; gcp &middot; react &middot; leaflet</div></div></article>
-    </div>
-  </section>
-
-  <section id="projects">
-    <p class="eyebrow">02 &nbsp; Things I&rsquo;ve built</p>
-    <div class="projects">
-      <article class="project"><div class="meta"><span>2024</span><span class="role">Big data &middot; ETL</span></div><h3><a href="https://github.com/anasch07/BigData-JobScrapper-Pipeline-Hadoop-Kafka-Spark" target="_blank" rel="noopener">Automated Job Data Scraper &rarr;</a></h3><p>End-to-end big-data ETL pipeline for real-time job-listing scraping, enrichment, and ranking with AI/LLM steps inline &mdash; cutting application time by ~40%.</p><div class="tags">puppeteer &middot; kafka &middot; spark &middot; hadoop &middot; hdfs &middot; celery &middot; next.js &middot; docker &middot; llms</div><div class="foot"><span class="note">github.com/anasch07</span><button class="more" data-project="jobscraper" type="button">Read more &rarr;</button></div></article>
-      <article class="project"><div class="meta"><span>2023&mdash;Present</span><span class="role">Founding engineer</span></div><h3><a href="https://nexaminds.net" target="_blank" rel="noopener">Nexaminds &rarr;</a></h3><p>Recruitment platform connecting businesses with talent. Built the MVP from scratch &mdash; UML, monorepo, microservices, observability, load testing.</p><div class="tags">nestjs &middot; next.js &middot; tailwind &middot; mongodb &middot; graphql &middot; aws &middot; gitlab ci &middot; datadog &middot; locust</div><div class="foot"><span class="note">Live &middot; nexaminds.net</span><button class="more" data-project="nexaminds" type="button">Read more &rarr;</button></div></article>
-      <article class="project"><div class="meta"><span>2023</span><span class="role">Team &middot; 3 people</span></div><h3>Quizini</h3><p>Graph-based quiz platform for educators. Professors compose interactive quizzes as graphs; students get a clean play surface and per-room performance analytics.</p><div class="tags">nestjs &middot; next.js &middot; tailwind &middot; mongodb &middot; azure &middot; github actions &middot; swagger</div><div class="foot"><button class="more" data-project="quizini" type="button">Read more &rarr;</button></div></article>
-      <article class="project"><div class="meta"><span>2022&mdash;2023</span><span class="role">Team &middot; 3 people</span></div><h3>Professional Network</h3><p>LinkedIn-style social network with real-time messaging, group spaces, events, and WebRTC audio/video calls between members.</p><div class="tags">react &middot; node &middot; express &middot; mongodb &middot; redux &middot; socket.io &middot; webrtc &middot; jwt</div><div class="foot"><button class="more" data-project="prosocial" type="button">Read more &rarr;</button></div></article>
-      <article class="project"><div class="meta"><span>2022</span><span class="role">Team &middot; <a href="https://www.orange.com/" target="_blank" rel="noopener">Orange</a></span></div><h3>FireFlow</h3><p>IoT mesh of ESP32 nodes for real-time forest-fire detection, with an AI fire-spread model and a live thermal map for firefighter dispatch.</p><div class="tags">react &middot; node &middot; mongodb &middot; mqtt &middot; esp32 &middot; tensorflow &middot; vertex ai &middot; leaflet</div><div class="foot"><span class="note">Won Orange Summer Challenge 2022</span><button class="more" data-project="fireflow" type="button">Read more &rarr;</button></div></article>
-      <article class="project"><div class="meta"><span>2023</span><span class="role">Distributed systems</span></div><h3><a href="https://github.com/anasch07/DB-Synchronization-with-RabbitMQ" target="_blank" rel="noopener">Distributed Database Synchronizer &rarr;</a></h3><p>End-to-end database synchronization across heterogeneous systems using RabbitMQ as the spine &mdash; streamlining cross-system data consistency under failure.</p><div class="tags">rabbitmq &middot; distributed systems &middot; python</div><div class="foot"><span class="note">github.com/anasch07</span><button class="more" data-project="dbsync" type="button">Read more &rarr;</button></div></article>
-    </div>
-  </section>
-
-  <section id="words">
-    <p class="eyebrow">03 &nbsp; Kind words</p>
-    <div class="words">
-      <article class="word"><p class="quote">Anas made substantial improvements in our automated testing and streamlined our test setup &mdash; refactoring for readability, hardening security, and identifying vulnerabilities. Proactive, collaborative, an excellent asset to any organization.</p><div class="by"><div class="who">Iacopo Poli<span>Chief Product Officer</span></div><div class="at">LightOn</div></div></article>
-      <article class="word"><p class="quote">A very hard worker who consistently went above and beyond. Anas became proficient across our microservice architectures and frontend integrations &mdash; an excellent team player who communicates effectively and consistently delivers high-quality work.</p><div class="by"><div class="who">Aziz Fekih<span>Chief Product Officer</span></div><div class="at">Nexaminds</div></div></article>
-      <article class="word"><p class="quote">One of INSAT&rsquo;s brightest students. Both technically and socially, Anas stood out and took on more and more responsibility. He&rsquo;s one of those people who really put their minds to something and eventually make it happen.</p><div class="by"><div class="who">Mohamed Ben Attia<span>Ex-President of the association</span></div><div class="at">Junior Entreprise INSAT</div></div></article>
-      <article class="word"><p class="quote">I worked with Anas during the Forum INSAT Entreprise hackathon, where he led the project. He demonstrated strong communication skills and a solid attitude toward challenging situations.</p><div class="by"><div class="who">Bacem Mejdoub<span>Consultant</span></div><div class="at">EY</div></div></article>
-    </div>
-  </section>
-
-  <section id="skills">
-    <p class="eyebrow">04 &nbsp; Stack</p>
-    <div class="skills-grid">
-      <div class="row"><div class="label">Programming languages</div><div class="vals">TypeScript &middot; JavaScript &middot; Python &middot; C / C++ &middot; SQL / PL-SQL</div></div>
-      <div class="row"><div class="label">Backend</div><div class="vals">NestJS &middot; Express.js &middot; GraphQL &middot; FastAPI &middot; Django &middot; Celery &middot; Locust &middot; Swagger &middot; MkDocs</div></div>
-      <div class="row"><div class="label">Frontend</div><div class="vals">React &middot; Next.js &middot; Angular &middot; Redux &middot; Tailwind &middot; CSS / SCSS &middot; shadcn/ui</div></div>
-      <div class="row"><div class="label">Cloud &amp; DevOps</div><div class="vals">Docker &middot; AWS &middot; Azure &middot; Kubernetes &middot; CI/CD &middot; Ansible &middot; SonarQube &middot; Git &middot; RabbitMQ</div></div>
-      <div class="row"><div class="label">Interests</div><div class="vals">System design &middot; distributed systems &middot; problem solving &middot; DevSecOps &middot; LLMs &middot; automation</div></div>
-    </div>
-  </section>
-
-  <section id="education">
-    <div class="split">
-      <div>
-        <p class="eyebrow">05 &nbsp; Education</p>
-        <h3>M.Sc. Software Engineering</h3>
-        <p>INSAT &middot; Tunis &middot; 2020 &mdash; 2025</p>
-        <ul>
-          <li>Distributed systems<span class="meta">core</span></li>
-          <li>Software testing &amp; DevOps<span class="meta">core</span></li>
-          <li>Big data &amp; databases<span class="meta">core</span></li>
-          <li>Algorithms &amp; data structures<span class="meta">core</span></li>
-          <li>Cyber security &amp; optimization<span class="meta">elective</span></li>
-        </ul>
-        <a class="cv-link" href="https://drive.google.com/file/d/19IzHyXTGBQ048u107moj3dcc1J1YmOWF/view" target="_blank" rel="noopener">Study plan &mdash; r&eacute;sum&eacute; &rarr;</a>
-        <div class="languages">
-          <div><strong>English</strong><span>Fluent</span></div>
-          <div><strong>French</strong><span>Professional</span></div>
-          <div><strong>German</strong><span>Basic</span></div>
-        </div>
-      </div>
-      <div>
-        <p class="eyebrow">06 &nbsp; Awards</p>
-        <ul>
-          <li>IEEE Extreme 16.0 &mdash; Top 10<span class="meta">2022</span></li>
-          <li>Orange Summer Challenge &mdash; 2nd prize<span class="meta">2022</span></li>
-          <li>Open Startup Tunisia &mdash; First-cohort winner<span class="meta">2021</span></li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="contact" id="contact">
-    <p class="eyebrow">07 &nbsp; Contact</p>
-    <h2>Let&rsquo;s build something<br><a href="mailto:anas.chaibi@insat.ucar.tn">worth shipping &rarr;</a></h2>
-    <div class="contact-grid">
-      <a href="mailto:anas.chaibi@insat.ucar.tn"><strong>Email</strong><span>anas.chaibi@insat.ucar.tn</span></a>
-      <a href="https://github.com/anasch07" target="_blank" rel="noopener"><strong>GitHub</strong><span>github.com/anasch07</span></a>
-      <a href="https://linkedin.com/in/anas-chaibi" target="_blank" rel="noopener"><strong>LinkedIn</strong><span>linkedin.com/in/anas-chaibi</span></a>
-      <a href="https://anas-chaibi.me" target="_blank" rel="noopener"><strong>Web</strong><span>anas-chaibi.me</span></a>
-    </div>
-  </section>
-
-</main>
-
-<footer class="wrap">
-  <span>&copy; Anas Chaibi &middot; 2026</span>
-  <span>Set in system sans &middot; built with care</span>
-</footer>
-
-<aside class="toc" aria-label="Sections">
-  <a href="#top" data-id="top"><span class="rule"></span><span class="num">00</span><span class="label">Intro</span></a>
-  <a href="#work" data-id="work"><span class="rule"></span><span class="num">01</span><span class="label">Work</span></a>
-  <a href="#projects" data-id="projects"><span class="rule"></span><span class="num">02</span><span class="label">Projects</span></a>
-  <a href="#words" data-id="words"><span class="rule"></span><span class="num">03</span><span class="label">Words</span></a>
-  <a href="#skills" data-id="skills"><span class="rule"></span><span class="num">04</span><span class="label">Stack</span></a>
-  <a href="#education" data-id="education"><span class="rule"></span><span class="num">05</span><span class="label">Education</span></a>
-  <a href="#contact" data-id="contact"><span class="rule"></span><span class="num">06</span><span class="label">Contact</span></a>
-</aside>
-
-<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal" role="document">
-    <button class="modal-close" type="button" aria-label="Close">&times;</button>
-    <p class="modal-eyebrow" id="modal-eyebrow"></p>
-    <h2 id="modal-title"></h2>
-    <p class="deck" id="modal-deck"></p>
-    <div id="modal-body"></div>
-  </div>
-</div>
-
-<script>
-(function () {
-  var projects = {
-    fireflow: {eyebrow:["2022","Team of 6","Orange Summer Challenge"],title:"FireFlow",deck:"An IoT node network for real-time fire detection and AI-driven spread prediction — helping firefighters see the fire before they reach it.",problem:"Forest and mountain fires are hard to detect early and even harder to predict. Firefighters arrive without situational awareness; FireFlow puts a mesh of sensor nodes in the forest and an AI model on top of the data, so dispatch knows where the fire is heading before it gets there.",features:["Network of IoT nodes with weather & environmental sensors at strategic forest coordinates.","Real-time interactive thermal map (Leaflet) of fire locations and intensities.","AI model that predicts fire-spread direction and shape to support strategic planning.","Device management portal to control and monitor the deployed nodes remotely.","Firebase-backed alerts for sudden environmental shifts — e.g. rapid wind direction changes."],highlights:["Full MERN web platform (MongoDB, Express, React, Node) with REST APIs designed for scale.","ESP32 microcontrollers programmed with Arduino, communicating over MQTT publish/subscribe.","AI model trained and served on Google Vertex AI / TensorFlow with BigQuery as the warehouse.","Firebase for real-time push notifications.","I was leading the 6-person team and owned the back-end + web platform."],stack:"react · node · express · mongodb · redux · mqtt · esp32 · arduino · tensorflow · vertex ai · bigquery · firebase · leaflet · bootstrap",awards:["Winner — 12th edition of the Orange Summer Challenge (OSC 2022).","Press coverage in African Manager, Il Boursa, Business News.","Trained by experts from Orange, EY, and Google during the program."],links:[{label:"Pitch video",href:"https://youtu.be/Wnq41pJWal0"},{label:"Demo",href:"https://www.youtube.com/embed/gpI5CX1Xfk4"}]},
-    nexaminds: {eyebrow:["2023 — Present","Founding engineer","Live product"],title:"Nexaminds",deck:"A B2B recruitment platform connecting companies with exceptional technical talent — built from day zero as one of two founding engineers.",problem:"Businesses struggle to source and vet specialized engineering talent through generic platforms. Nexaminds is a structured, scalable product that lets companies post offers, browse curated talent, and hire — all in one place.",features:["Company portal: browse talents, post offers, hire, manage “My Talents”.","Talent portal: apply, explore offers, manage profile.","Editorial blog and marketing landing page.","Enterprise account management — company branding and profile editing.","Architected for incremental feature additions through cross-functional design sessions."],highlights:["Modular microservices architecture in NestJS with service boundaries defined upfront via UML diagrams and flowcharts.","Backend monorepo on Nx + NestJS for shared code, dependency management, and clean integration paths.","REST and GraphQL APIs documented with Swagger; Postman collections; load tested with Locust.","Strapi as a headless CMS for the editorial layer.","GitLab CI/CD pipelines deploying to AWS, with DataDog for observability and monitoring.","Unit testing and load testing built in as first-class practices from week one."],stack:"nestjs · next.js · tailwind · mongodb · graphql · strapi · nx monorepo · aws · gitlab ci · datadog · swagger · postman · locust",awards:[],links:[{label:"nexaminds.net",href:"https://www.nexaminds.net"}]},
-    quizini: {eyebrow:["Jul — Sep 2023","Team of 3","Education"],title:"Quizini",deck:"A graph-based quiz platform where professors author interconnected questions as nodes and students get rich, structured analytics on every attempt.",problem:"Traditional quiz tools are linear. Quizini lets educators model knowledge as graphs of related concepts — students get a more intuitive surface, professors get analytics that map back to the structure of the material itself.",features:["Student dashboard — categories, join rooms, browse all rooms, track submissions.","Professor dashboard — create / manage quizzes, see per-quiz and per-room statistics.","Graph-based quiz builder — interactive node-based question authoring.","Quiz info detail view and submission history for students.","Per-room and per-quiz analytics for educators to fine-tune teaching strategy."],highlights:["NestJS backend with Swagger-documented APIs and Postman test collections.","Next.js + Tailwind frontend with role-aware student / professor / admin views.","MongoDB datastore.","Deployed on Azure with CI/CD via GitHub Actions.","Unit testing as a first-class practice."],stack:"nestjs · next.js · tailwind · mongodb · azure · github actions · swagger · postman",awards:[],links:[]},
-    prosocial: {eyebrow:["Dec 2022 — Feb 2023","Team of 3","Real-time"],title:"Professional Social Network",deck:"A LinkedIn-style platform with the full social graph + real-time messaging and WebRTC audio/video calls — shipped in roughly two months.",problem:"Professional networks are often closed monoliths missing real-time communication. This was a portfolio-grade engineering exercise: ship the full feature set — social graph, messaging, calls, admin — end to end.",features:["JWT-secured auth — register, login, profile.","Posts: create, edit, save, like, comment.","Follow / unfollow, user search.","Real-time direct messaging via Socket.io.","WebRTC audio and video calls between members.","Group and event management.","Admin panel — user management, platform statistics."],highlights:["MERN stack (MongoDB, Express, React, Node).","Socket.io for real-time bidirectional messaging.","WebRTC for peer-to-peer audio and video calls.","Redux for client-side state management.","Material UI + Bootstrap for component library and responsive layout.","11 distinct screens covering the full member + admin journey."],stack:"react · node · express · mongodb · redux · socket.io · webrtc · jwt · material ui · bootstrap",awards:[],links:[]},
-    jobscraper: {eyebrow:["2024","Big data","ETL + LLM"],title:"Automated Job Data Scraper",deck:"An ETL workflow with AI and LLM integration — a big-data job-scraping pipeline for efficient real-time data processing that cuts application time by ~40%.",problem:"Job-board listings are scattered, noisy, and stale by the time a candidate reads them. The pipeline scrapes, normalizes, enriches, and ranks listings in real time so applicants see only what's relevant — and recent.",features:["Headless scraping across multiple job boards (Puppeteer).","Streaming ingestion through Kafka into a Hadoop / HDFS data lake.","Spark jobs for normalization, deduplication, and enrichment at scale.","AI/LLM enrichment step for skill extraction, summarization, and ranking.","Celery workers orchestrating the pipeline; Next.js frontend for browsing the results.","Containerized end-to-end with Docker for reproducible local + prod runs."],highlights:["Designed as a real big-data pipeline — Kafka topics for ingest, HDFS for raw + curated zones, Spark for transformations.","LLM step inserted after normalization so downstream consumers get structured, semantically-tagged listings.","Reduced effective application time by ~40% for end users by surfacing only relevant, deduplicated postings.","Modular stages — scraper, ingester, transformer, enricher — each independently scalable and observable."],stack:"puppeteer · kafka · spark · hadoop · hdfs · celery · next.js · docker · python · llms",awards:[],links:[{label:"GitHub repo",href:"https://github.com/anasch07/BigData-JobScrapper-Pipeline-Hadoop-Kafka-Spark"}]},
-    dbsync: {eyebrow:["2023","Distributed systems","Academic"],title:"Distributed Database Synchronizer",deck:"An end-to-end database synchronization service using RabbitMQ as the spine — keeping cross-system data consistent under partial failure.",problem:"Heterogeneous systems drift out of sync the moment one of them goes down. The challenge: synchronize databases across systems with at-least-once delivery, idempotent writes, and graceful recovery when a node returns.",features:["Change-event publishing from each source database into a RabbitMQ exchange.","Per-system consumers that apply changes idempotently with conflict resolution rules.","Replay support — late-joining or recovering nodes catch up from durable queues.","Pluggable adapters so additional databases can join the topology without core changes."],highlights:["RabbitMQ topic exchanges for fan-out + selective routing per system.","Idempotent writers — every change carries a stable id so retries can't double-apply.","Python-based services, fully containerized for deterministic local testing.","Designed around the realities of distributed consistency: at-least-once delivery, partial failures, and convergent state."],stack:"rabbitmq · python · distributed systems · docker",awards:[],links:[{label:"GitHub repo",href:"https://github.com/anasch07/DB-Synchronization-with-RabbitMQ"}]}
-  };
-
-  var overlay = document.getElementById("modal");
-  var elEyebrow = document.getElementById("modal-eyebrow");
-  var elTitle = document.getElementById("modal-title");
-  var elDeck = document.getElementById("modal-deck");
-  var elBody = document.getElementById("modal-body");
-
-  function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c];});}
-
-  function renderModal(p){
-    elEyebrow.innerHTML = p.eyebrow.map(function(s,i){return (i?"<span class=\"pipe\">/</span>":"")+"<span>"+escapeHtml(s)+"</span>";}).join("");
-    elTitle.textContent = p.title;
-    elDeck.textContent = p.deck;
-    var html = "";
-    if (p.problem) html += "<h4>The problem</h4><p>"+escapeHtml(p.problem)+"</p>";
-    if (p.features && p.features.length) {html+="<h4>What it does</h4><ul>";p.features.forEach(function(f){html+="<li>"+escapeHtml(f)+"</li>";});html+="</ul>";}
-    if (p.highlights && p.highlights.length) {html+="<h4>How it&rsquo;s built</h4><ul>";p.highlights.forEach(function(h){html+="<li>"+escapeHtml(h)+"</li>";});html+="</ul>";}
-    if (p.stack) html += "<h4>Stack</h4><p class=\"stack\">"+escapeHtml(p.stack)+"</p>";
-    if (p.awards && p.awards.length) {html+="<h4>Outcomes</h4><ul>";p.awards.forEach(function(a){html+="<li>"+escapeHtml(a)+"</li>";});html+="</ul>";}
-    if (p.links && p.links.length) {html+="<h4>Links</h4><div class=\"links\">";p.links.forEach(function(l){html+="<a href=\""+escapeHtml(l.href)+"\" target=\"_blank\" rel=\"noopener\">"+escapeHtml(l.label)+" &rarr;</a>";});html+="</div>";}
-    elBody.innerHTML = html;
-  }
-  function openModal(id){var p=projects[id];if(!p)return;renderModal(p);overlay.classList.add("open");overlay.setAttribute("aria-hidden","false");document.body.classList.add("modal-open");overlay.scrollTop=0;}
-  function closeModal(){overlay.classList.remove("open");overlay.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open");}
-
-  document.querySelectorAll(".project .more").forEach(function(btn){btn.addEventListener("click",function(){openModal(btn.getAttribute("data-project"));});});
-  overlay.addEventListener("click",function(e){if(e.target===overlay)closeModal();});
-  overlay.querySelector(".modal-close").addEventListener("click",closeModal);
-  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&overlay.classList.contains("open"))closeModal();});
-
-  var themeToggle = document.querySelector(".theme-toggle");
-  if (themeToggle) {
-    themeToggle.addEventListener("click",function(){
-      var isDark = document.documentElement.getAttribute("data-theme") === "dark";
-      if (isDark) {document.documentElement.removeAttribute("data-theme");try{localStorage.setItem("theme","light");}catch(e){}}
-      else {document.documentElement.setAttribute("data-theme","dark");try{localStorage.setItem("theme","dark");}catch(e){}}
-    });
-  }
-
-  var tocLinks = Array.prototype.slice.call(document.querySelectorAll(".toc a"));
-  var sections = tocLinks.map(function(a){return document.getElementById(a.getAttribute("data-id"));}).filter(Boolean);
-  function setActive(id){tocLinks.forEach(function(a){a.classList.toggle("active",a.getAttribute("data-id")===id);});}
-  if ("IntersectionObserver" in window) {
-    var visible = new Map();
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){if(en.isIntersecting)visible.set(en.target.id,en.intersectionRatio);else visible.delete(en.target.id);});
-      var bestId=null,bestRatio=0;
-      visible.forEach(function(r,id){if(r>bestRatio){bestRatio=r;bestId=id;}});
-      if (bestId) setActive(bestId);
-    },{rootMargin:"-30% 0px -50% 0px",threshold:[0,0.25,0.5,0.75,1]});
-    sections.forEach(function(s){io.observe(s);});
-  }
-  setActive("top");
-})();
-</script>
-
-</body>
+      <script>
+         (function () {
+           var projects = {
+             fireflow: {eyebrow:["2022","Team of 6","Orange Summer Challenge"],title:"FireFlow",deck:"An IoT node network for real-time fire detection and AI-driven spread prediction — helping firefighters see the fire before they reach it.",problem:"Forest and mountain fires are hard to detect early and even harder to predict. Firefighters arrive without situational awareness; FireFlow puts a mesh of sensor nodes in the forest and an AI model on top of the data, so dispatch knows where the fire is heading before it gets there.",features:["Network of IoT nodes with weather & environmental sensors at strategic forest coordinates.","Real-time interactive thermal map (Leaflet) of fire locations and intensities.","AI model that predicts fire-spread direction and shape to support strategic planning.","Device management portal to control and monitor the deployed nodes remotely.","Firebase-backed alerts for sudden environmental shifts — e.g. rapid wind direction changes."],highlights:["Full MERN web platform (MongoDB, Express, React, Node) with REST APIs designed for scale.","ESP32 microcontrollers programmed with Arduino, communicating over MQTT publish/subscribe.","AI model trained and served on Google Vertex AI / TensorFlow with BigQuery as the warehouse.","Firebase for real-time push notifications.","I was leading the 6-person team and owned the back-end + web platform."],stack:"react · node · express · mongodb · redux · mqtt · esp32 · arduino · tensorflow · vertex ai · bigquery · firebase · leaflet · bootstrap",awards:["Winner — 12th edition of the Orange Summer Challenge (OSC 2022).","Press coverage in African Manager, Il Boursa, Business News.","Trained by experts from Orange, EY, and Google during the program."],links:[{label:"Pitch video",href:"https://youtu.be/Wnq41pJWal0"},{label:"Demo",href:"https://www.youtube.com/embed/gpI5CX1Xfk4"}]},
+             nexaminds: {eyebrow:["2023 — Present","Founding engineer","Live product"],title:"Nexaminds",deck:"A B2B recruitment platform connecting companies with exceptional technical talent — built from day zero as one of two founding engineers.",problem:"Businesses struggle to source and vet specialized engineering talent through generic platforms. Nexaminds is a structured, scalable product that lets companies post offers, browse curated talent, and hire — all in one place.",features:["Company portal: browse talents, post offers, hire, manage “My Talents”.","Talent portal: apply, explore offers, manage profile.","Editorial blog and marketing landing page.","Enterprise account management — company branding and profile editing.","Architected for incremental feature additions through cross-functional design sessions."],highlights:["Modular microservices architecture in NestJS with service boundaries defined upfront via UML diagrams and flowcharts.","Backend monorepo on Nx + NestJS for shared code, dependency management, and clean integration paths.","REST and GraphQL APIs documented with Swagger; Postman collections; load tested with Locust.","Strapi as a headless CMS for the editorial layer.","GitLab CI/CD pipelines deploying to AWS, with DataDog for observability and monitoring.","Unit testing and load testing built in as first-class practices from week one."],stack:"nestjs · next.js · tailwind · mongodb · graphql · strapi · nx monorepo · aws · gitlab ci · datadog · swagger · postman · locust",awards:[],links:[{label:"nexaminds.net",href:"https://www.nexaminds.net"}]},
+             quizini: {eyebrow:["Jul — Sep 2023","Team of 3","Education"],title:"Quizini",deck:"A graph-based quiz platform where professors author interconnected questions as nodes and students get rich, structured analytics on every attempt.",problem:"Traditional quiz tools are linear. Quizini lets educators model knowledge as graphs of related concepts — students get a more intuitive surface, professors get analytics that map back to the structure of the material itself.",features:["Student dashboard — categories, join rooms, browse all rooms, track submissions.","Professor dashboard — create / manage quizzes, see per-quiz and per-room statistics.","Graph-based quiz builder — interactive node-based question authoring.","Quiz info detail view and submission history for students.","Per-room and per-quiz analytics for educators to fine-tune teaching strategy."],highlights:["NestJS backend with Swagger-documented APIs and Postman test collections.","Next.js + Tailwind frontend with role-aware student / professor / admin views.","MongoDB datastore.","Deployed on Azure with CI/CD via GitHub Actions.","Unit testing as a first-class practice."],stack:"nestjs · next.js · tailwind · mongodb · azure · github actions · swagger · postman",awards:[],links:[]},
+             prosocial: {eyebrow:["Dec 2022 — Feb 2023","Team of 3","Real-time"],title:"Professional Social Network",deck:"A LinkedIn-style platform with the full social graph + real-time messaging and WebRTC audio/video calls — shipped in roughly two months.",problem:"Professional networks are often closed monoliths missing real-time communication. This was a portfolio-grade engineering exercise: ship the full feature set — social graph, messaging, calls, admin — end to end.",features:["JWT-secured auth — register, login, profile.","Posts: create, edit, save, like, comment.","Follow / unfollow, user search.","Real-time direct messaging via Socket.io.","WebRTC audio and video calls between members.","Group and event management.","Admin panel — user management, platform statistics."],highlights:["MERN stack (MongoDB, Express, React, Node).","Socket.io for real-time bidirectional messaging.","WebRTC for peer-to-peer audio and video calls.","Redux for client-side state management.","Material UI + Bootstrap for component library and responsive layout.","11 distinct screens covering the full member + admin journey."],stack:"react · node · express · mongodb · redux · socket.io · webrtc · jwt · material ui · bootstrap",awards:[],links:[]},
+             jobscraper: {eyebrow:["2024","Big data","ETL + LLM"],title:"Automated Job Data Scraper",deck:"An ETL workflow with AI and LLM integration — a big-data job-scraping pipeline for efficient real-time data processing that cuts application time by ~40%.",problem:"Job-board listings are scattered, noisy, and stale by the time a candidate reads them. The pipeline scrapes, normalizes, enriches, and ranks listings in real time so applicants see only what's relevant — and recent.",features:["Headless scraping across multiple job boards (Puppeteer).","Streaming ingestion through Kafka into a Hadoop / HDFS data lake.","Spark jobs for normalization, deduplication, and enrichment at scale.","AI/LLM enrichment step for skill extraction, summarization, and ranking.","Celery workers orchestrating the pipeline; Next.js frontend for browsing the results.","Containerized end-to-end with Docker for reproducible local + prod runs."],highlights:["Designed as a real big-data pipeline — Kafka topics for ingest, HDFS for raw + curated zones, Spark for transformations.","LLM step inserted after normalization so downstream consumers get structured, semantically-tagged listings.","Reduced effective application time by ~40% for end users by surfacing only relevant, deduplicated postings.","Modular stages — scraper, ingester, transformer, enricher — each independently scalable and observable."],stack:"puppeteer · kafka · spark · hadoop · hdfs · celery · next.js · docker · python · llms",awards:[],links:[{label:"GitHub repo",href:"https://github.com/anasch07/BigData-JobScrapper-Pipeline-Hadoop-Kafka-Spark"}]},
+             dbsync: {eyebrow:["2023","Distributed systems","Academic"],title:"Distributed Database Synchronizer",deck:"An end-to-end database synchronization service using RabbitMQ as the spine — keeping cross-system data consistent under partial failure.",problem:"Heterogeneous systems drift out of sync the moment one of them goes down. The challenge: synchronize databases across systems with at-least-once delivery, idempotent writes, and graceful recovery when a node returns.",features:["Change-event publishing from each source database into a RabbitMQ exchange.","Per-system consumers that apply changes idempotently with conflict resolution rules.","Replay support — late-joining or recovering nodes catch up from durable queues.","Pluggable adapters so additional databases can join the topology without core changes."],highlights:["RabbitMQ topic exchanges for fan-out + selective routing per system.","Idempotent writers — every change carries a stable id so retries can't double-apply.","Python-based services, fully containerized for deterministic local testing.","Designed around the realities of distributed consistency: at-least-once delivery, partial failures, and convergent state."],stack:"rabbitmq · python · distributed systems · docker",awards:[],links:[{label:"GitHub repo",href:"https://github.com/anasch07/DB-Synchronization-with-RabbitMQ"}]}
+           };
+         
+           var overlay = document.getElementById("modal");
+           var elEyebrow = document.getElementById("modal-eyebrow");
+           var elTitle = document.getElementById("modal-title");
+           var elDeck = document.getElementById("modal-deck");
+           var elBody = document.getElementById("modal-body");
+         
+           function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c];});}
+         
+           function renderModal(p){
+             elEyebrow.innerHTML = p.eyebrow.map(function(s,i){return (i?"<span class=\"pipe\">/</span>":"")+"<span>"+escapeHtml(s)+"</span>";}).join("");
+             elTitle.textContent = p.title;
+             elDeck.textContent = p.deck;
+             var html = "";
+             if (p.problem) html += "<h4>The problem</h4><p>"+escapeHtml(p.problem)+"</p>";
+             if (p.features && p.features.length) {html+="<h4>What it does</h4><ul>";p.features.forEach(function(f){html+="<li>"+escapeHtml(f)+"</li>";});html+="</ul>";}
+             if (p.highlights && p.highlights.length) {html+="<h4>How it&rsquo;s built</h4><ul>";p.highlights.forEach(function(h){html+="<li>"+escapeHtml(h)+"</li>";});html+="</ul>";}
+             if (p.stack) html += "<h4>Stack</h4><p class=\"stack\">"+escapeHtml(p.stack)+"</p>";
+             if (p.awards && p.awards.length) {html+="<h4>Outcomes</h4><ul>";p.awards.forEach(function(a){html+="<li>"+escapeHtml(a)+"</li>";});html+="</ul>";}
+             if (p.links && p.links.length) {html+="<h4>Links</h4><div class=\"links\">";p.links.forEach(function(l){html+="<a href=\""+escapeHtml(l.href)+"\" target=\"_blank\" rel=\"noopener\">"+escapeHtml(l.label)+" &rarr;</a>";});html+="</div>";}
+             elBody.innerHTML = html;
+           }
+           function openModal(id){var p=projects[id];if(!p)return;renderModal(p);overlay.classList.add("open");overlay.setAttribute("aria-hidden","false");document.body.classList.add("modal-open");overlay.scrollTop=0;}
+           function closeModal(){overlay.classList.remove("open");overlay.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open");}
+         
+           document.querySelectorAll(".project .more").forEach(function(btn){btn.addEventListener("click",function(){openModal(btn.getAttribute("data-project"));});});
+           overlay.addEventListener("click",function(e){if(e.target===overlay)closeModal();});
+           overlay.querySelector(".modal-close").addEventListener("click",closeModal);
+           document.addEventListener("keydown",function(e){if(e.key==="Escape"&&overlay.classList.contains("open"))closeModal();});
+         
+           var themeToggle = document.querySelector(".theme-toggle");
+           if (themeToggle) {
+             themeToggle.addEventListener("click",function(){
+               var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+               if (isDark) {document.documentElement.removeAttribute("data-theme");try{localStorage.setItem("theme","light");}catch(e){}}
+               else {document.documentElement.setAttribute("data-theme","dark");try{localStorage.setItem("theme","dark");}catch(e){}}
+             });
+           }
+         
+           var tocLinks = Array.prototype.slice.call(document.querySelectorAll(".toc a"));
+           var sections = tocLinks.map(function(a){return document.getElementById(a.getAttribute("data-id"));}).filter(Boolean);
+           function setActive(id){tocLinks.forEach(function(a){a.classList.toggle("active",a.getAttribute("data-id")===id);});}
+           if ("IntersectionObserver" in window) {
+             var visible = new Map();
+             var io = new IntersectionObserver(function(entries){
+               entries.forEach(function(en){if(en.isIntersecting)visible.set(en.target.id,en.intersectionRatio);else visible.delete(en.target.id);});
+               var bestId=null,bestRatio=0;
+               visible.forEach(function(r,id){if(r>bestRatio){bestRatio=r;bestId=id;}});
+               if (bestId) setActive(bestId);
+             },{rootMargin:"-30% 0px -50% 0px",threshold:[0,0.25,0.5,0.75,1]});
+             sections.forEach(function(s){io.observe(s);});
+           }
+           setActive("top");
+         })();
+      </script>
+   </body>
 </html>
