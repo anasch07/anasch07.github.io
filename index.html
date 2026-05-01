@@ -110,6 +110,7 @@
          display: flex;
          align-items: center;
          justify-content: space-between;
+         gap: 10px;
          height: 56px;
          }
          .brand-row { display: flex; align-items: center; gap: 18px; }
@@ -118,8 +119,10 @@
          letter-spacing: -0.015em;
          font-size: 14px;
          display: inline-flex; align-items: center;
+         white-space: nowrap;
          transition: opacity .15s ease;
          }
+         .brand-row { flex-shrink: 0; }
          .brand:hover { opacity: .65; }
          .brand .dot {
          display: inline-block;
@@ -161,14 +164,15 @@
          .theme-toggle {
          appearance: none;
          background: none;
-         border: 1px solid var(--border);
+         border: none;
+         padding: 0;
          width: 32px; height: 32px;
          display: inline-flex; align-items: center; justify-content: center;
          cursor: pointer;
          color: var(--muted);
-         transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+         transition: color .15s ease;
          }
-         .theme-toggle:hover { border-color: var(--fg); color: var(--fg); }
+         .theme-toggle:hover { color: var(--fg); }
          .theme-toggle svg { width: 14px; height: 14px; display: block; }
          .theme-toggle .icon-sun  { display: none; }
          .theme-toggle .icon-moon { display: block; }
@@ -980,7 +984,7 @@
             </h1>
             <div class="intro-meta">
                <span><strong>Based in</strong>Paris, France</span>
-               <span><strong>Focus</strong>Full-stack &middot; distributed systems &middot; LLMs</span>
+               <span><strong>Focus</strong>Full-stack &middot; distributed systems &middot; LLMs &middot; product thinking</span>
             </div>
             <p class="bio">
                Full-stack software engineer with 3+ years across startups and international
